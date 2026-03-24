@@ -8,4 +8,8 @@
 
 - [Тут перше](practice_OOP_Hirich/task1/task1.md)
 
+## Завдання 2 
+
+- [Тут друге](practice_OOP_Hirich/task2/task2.md)
+
 ## to be continued...
