@@ -16,4 +16,8 @@
 
 - [Тут третє](practice_OOP_Hirich/task3/task3.md)
 
+## Завдання 4
+
+- [Тут четверте](practice_OOP_Hirich/task4/task4.md)
+
 ## to be continued...
