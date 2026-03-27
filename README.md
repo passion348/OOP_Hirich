@@ -20,4 +20,8 @@
 
 - [Тут четверте](practice_OOP_Hirich/task4/task4.md)
 
+## Завдання 5
+
+- [Тут п'яте](practice_OOP_Hirich/task5/task5.md)
+
 ## to be continued...
