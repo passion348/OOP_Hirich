@@ -1,29 +1,22 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
-/**
- * Головний клас програми
- * Демонструє Factory Method, поліморфізм, перевизначення та перевантаження
- */
+/* Головний клас програми */
 public class task4 {
 
-    /** Інтерфейс відображення */
+    /* Інтерфейс відображення */
     interface Displayable {
         String display();
     }
 
-    /**
-     * Клас даних (Serializable)
-     */
+    /* Клас даних (Serializable) */
     static class ShapeData implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private double side;
         private double result;
 
-        /** transient поле не серіалізується */
+        /* transient поле не серіалізується */
         private transient String binaryInput;
 
         public ShapeData(String binaryInput) {
@@ -41,9 +34,7 @@ public class task4 {
         }
     }
 
-    /**
-     * Абстрактний клас продукту
-     */
+    /* Абстрактний клас продукту */
     static abstract class ShapeResult implements Displayable, Serializable {
         protected ShapeData data;
 
@@ -51,26 +42,24 @@ public class task4 {
             this.data = data;
         }
 
-        /** Основний метод обчислення */
+        /* Основний метод обчислення */
         public abstract void calculate();
 
-        /** Перевантаження (overloading) */
+        /* Перевантаження (overloading) */
         public void calculate(double multiplier) {
             calculate();
             data.setResult(data.getResult() * multiplier);
         }
     }
 
-    /**
-     * Конкретний клас (звичайний вивід)
-     */
+    /* Конкретний клас (звичайний вивід) */
     static class TriangleSquare extends ShapeResult {
 
         public TriangleSquare(ShapeData data) {
             super(data);
         }
 
-        /** Перевизначення методу (overriding) */
+        /* Перевизначення методу (overriding) */
         @Override
         public void calculate() {
             double a = data.getSide();
@@ -84,9 +73,7 @@ public class task4 {
         }
     }
 
-    /**
-     * Табличне представлення результату
-     */
+    /* Табличне представлення результату */
     static class TableTriangleSquare extends TriangleSquare {
 
         private int width;
@@ -107,19 +94,19 @@ public class task4 {
         }
     }
 
-    /** Інтерфейс фабрики */
+    /* Інтерфейс фабрики */
     interface ShapeFactory {
         ShapeResult create(ShapeData data);
     }
 
-    /** Звичайна фабрика */
+    /* Звичайна фабрика */
     static class TriangleFactory implements ShapeFactory {
         public ShapeResult create(ShapeData data) {
             return new TriangleSquare(data);
         }
     }
 
-    /** Фабрика таблиці */
+    /* Фабрика таблиці */
     static class TableTriangleFactory implements ShapeFactory {
         private int width;
 
@@ -132,10 +119,10 @@ public class task4 {
         }
     }
 
-    /** Колекція результатів */
+    /* Колекція результатів */
     static List<ShapeResult> results = new ArrayList<>();
 
-    /** Збереження */
+    /* Збереження */
     static void save(List<ShapeResult> list) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data.ser"))) {
             oos.writeObject(list);
@@ -144,7 +131,7 @@ public class task4 {
         }
     }
 
-    /** Завантаження */
+    /* Завантаження */
     static List<ShapeResult> load() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("data.ser"))) {
             return (List<ShapeResult>) ois.readObject();
@@ -153,9 +140,7 @@ public class task4 {
         }
     }
 
-    /**
-     * Клас тестування
-     */
+    /* Тест */
     static class TestShape {
         public static void run() {
             ShapeData data = new ShapeData("101");
@@ -173,9 +158,6 @@ public class task4 {
         }
     }
 
-    /**
-     * Головний метод
-     */
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);

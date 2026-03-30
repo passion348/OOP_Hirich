@@ -7,19 +7,19 @@ import java.util.Scanner;
  */
 public class task5 {
 
-    /** Інтерфейс відображення */
+    /* Інтерфейс відображення */
     interface Displayable {
         String display();
     }
 
-    /**
-     * Клас даних
-     */
+    /* Клас даних (Serializable) */
     static class ShapeData implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private double side;
         private double result;
+
+        /* transient поле не серіалізується */
         private transient String binaryInput;
 
         public ShapeData(String binaryInput) {
@@ -36,9 +36,7 @@ public class task5 {
         }
     }
 
-    /**
-     * Абстрактний результат
-     */
+    /* Абстрактний клас продукту */
     static abstract class ShapeResult implements Displayable, Serializable {
         protected ShapeData data;
 
@@ -113,16 +111,13 @@ public class task5 {
         }
     }
 
-    /** ================= COMMAND ================= */
-
+    /* Інтерфейс команд */
     interface Command {
         void execute();
         void undo();
     }
 
-    /**
-     * Singleton менеджер команд
-     */
+    /* Singleton менеджер команд */
     static class CommandManager {
         private static CommandManager instance;
         private List<Command> history = new ArrayList<>();
@@ -148,9 +143,7 @@ public class task5 {
         }
     }
 
-    /**
-     * Масштабування
-     */
+    /* Масштабування */
     static class ScaleCommand implements Command {
         private List<ShapeResult> list;
         private double factor;
@@ -171,9 +164,7 @@ public class task5 {
         }
     }
 
-    /**
-     * Сортування
-     */
+    /* Сортування */
     static class SortCommand implements Command {
         private List<ShapeResult> list;
         private List<ShapeResult> backup;
@@ -193,9 +184,7 @@ public class task5 {
         }
     }
 
-    /**
-     * Нормалізація
-     */
+    /* Нормалізація */
     static class NormalizeCommand implements Command {
         private List<ShapeResult> list;
         private List<Double> backup = new ArrayList<>();
@@ -219,9 +208,7 @@ public class task5 {
         }
     }
 
-    /**
-     * Пошук
-     */
+    /* Пошук */
     static class SearchCommand implements Command {
         private List<ShapeResult> list;
         private double target;
@@ -243,9 +230,7 @@ public class task5 {
         }
     }
 
-    /**
-     * Макрокоманда
-     */
+    /* Макрокоманда */
     static class MacroCommand implements Command {
         private List<Command> commands = new ArrayList<>();
 
@@ -264,9 +249,7 @@ public class task5 {
         }
     }
 
-    /**
-     * Меню
-     */
+    /* Меню */
     static class Menu {
         public void show() {
             System.out.println("\n1-Масштабування");
@@ -279,8 +262,10 @@ public class task5 {
         }
     }
 
+    /* Колекція результатів */
     static List<ShapeResult> results = new ArrayList<>();
-
+    
+    /* Збереження */
     static void save(List<ShapeResult> list) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data.ser"))) {
             oos.writeObject(list);
@@ -289,6 +274,7 @@ public class task5 {
         }
     }
 
+    /* Завантаження */
     static List<ShapeResult> load() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("data.ser"))) {
             return (List<ShapeResult>) ois.readObject();
@@ -297,9 +283,7 @@ public class task5 {
         }
     }
 
-    /**
-     * Тест
-     */
+    /* Тест */
     static class TestShape {
         public static void run() {
             ShapeData data = new ShapeData("101");

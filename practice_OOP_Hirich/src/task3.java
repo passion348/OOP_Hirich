@@ -1,30 +1,22 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
-/**
- * Головний клас
- */
+/* Головний клас програми */
 public class task3 {
 
-    /**
-     * Інтерфейс відображення (фабрикованих об'єктів)
-     */
+    /* Інтерфейс відображення */
     interface Displayable {
         String display();
     }
 
-    /**
-     * Клас даних (Serializable)
-     */
+    /* Клас даних (Serializable) */
     static class ShapeData implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private double side;
         private double result;
 
-        /** Не серіалізується */
+        /* transient поле не серіалізується */
         private transient String binaryInput;
 
         public ShapeData(String binaryInput) {
@@ -42,9 +34,7 @@ public class task3 {
         }
     }
 
-    /**
-     * Абстрактний клас (Product)
-     */
+    /* Абстрактний клас продукту */
     static abstract class ShapeResult implements Displayable, Serializable {
         protected ShapeData data;
 
@@ -55,9 +45,7 @@ public class task3 {
         public abstract void calculate();
     }
 
-    /**
-     * Конкретний продукт
-     */
+    /* Конкретний клас (звичайний вивід) */
     static class TriangleSquare extends ShapeResult {
 
         public TriangleSquare(ShapeData data) {
@@ -77,16 +65,12 @@ public class task3 {
         }
     }
 
-    /**
-     * Інтерфейс фабрики
-     */
+    /* Інтерфейс фабрики */
     interface ShapeFactory {
         ShapeResult create(ShapeData data);
     }
 
-    /**
-     * Конкретна фабрика
-     */
+    /* Звичайна фабрика */
     static class TriangleFactory implements ShapeFactory {
         @Override
         public ShapeResult create(ShapeData data) {
@@ -94,14 +78,10 @@ public class task3 {
         }
     }
 
-    /**
-     * Колекція результатів
-     */
+    /* Колекція результатів */
     static List<ShapeResult> results = new ArrayList<>();
 
-    /**
-     * Збереження колекції
-     */
+    /* Збереження */
     static void save(List<ShapeResult> list) {
         try (ObjectOutputStream oos =
                      new ObjectOutputStream(new FileOutputStream("data.ser"))) {
@@ -111,9 +91,7 @@ public class task3 {
         }
     }
 
-    /**
-     * Завантаження колекції
-     */
+    /* Завантаження */
     static List<ShapeResult> load() {
         try (ObjectInputStream ois =
                      new ObjectInputStream(new FileInputStream("data.ser"))) {
@@ -124,9 +102,7 @@ public class task3 {
         return new ArrayList<>();
     }
 
-    /**
-     * Тест
-     */
+    /* Тест */
     static void test() {
         ShapeData data = new ShapeData("101"); // 5
         ShapeFactory factory = new TriangleFactory();
@@ -142,9 +118,6 @@ public class task3 {
             System.out.println("Помилка");
     }
 
-    /**
-     * main
-     */
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);

@@ -19,6 +19,7 @@ public class task6 {
 
         private double side;
         private double result;
+        
         /** transient поле не серіалізується */
         private transient String binaryInput;
 
@@ -35,6 +36,7 @@ public class task6 {
             return "Side=" + side + ", Result=" + result;
         }
     }
+
     /* Абстрактний клас продукту */
     static abstract class ShapeResult implements Displayable, Serializable {
         protected ShapeData data;
@@ -121,6 +123,7 @@ public class task6 {
         void undo();
     }
 
+    /* Singleton менеджер команд */
     static class CommandManager {
         private static CommandManager instance;
         private List<Command> history = new ArrayList<>();
@@ -177,6 +180,7 @@ public class task6 {
 
         public void undo() {}
     }
+
     /* Масштабування */
     static class ScaleCommand implements Command {
         private List<ShapeResult> list;
@@ -197,6 +201,7 @@ public class task6 {
                     r.data.setResult(r.data.getResult() / factor));
         }
     }
+
     /* Сортування */
     static class SortCommand implements Command {
         private List<ShapeResult> list;
@@ -267,6 +272,7 @@ public class task6 {
             System.out.println("Search не має undo");
         }
     }
+
     /* Макрокоманда */
     static class MacroCommand implements Command {
         private List<Command> commands = new ArrayList<>();
@@ -285,6 +291,7 @@ public class task6 {
                 commands.get(i).undo();
         }
     }
+
     /* пошук мінімуму, максимуму, обчислення середнього значення */
     static class StatsCommand implements Command {
         private List<ShapeResult> list;

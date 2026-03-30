@@ -1,18 +1,17 @@
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
 
+/* Головний клас програми */
 public class task2 {
 
-    /**
-     * Клас даних (Serializable)
-     */
+    /* Клас даних (Serializable) */
     static class ShapeData implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private double side;
         private double result;
 
-        /** Не серіалізується */
+        /* transient поле не серіалізується */
         private transient String binaryInput;
 
         public ShapeData(String binaryInput) {
@@ -32,9 +31,7 @@ public class task2 {
         }
     }
 
-    /**
-     * Клас обчислення (агрегування)
-     */
+    /* Клас обчислення (агрегування) */
     static class Calculator {
         private ShapeData data;
 
@@ -52,9 +49,7 @@ public class task2 {
         }
     }
 
-    /**
-     * Збереження об'єкта
-     */
+    /* Збереження об'єкта */
     static void save(ShapeData data) {
         try (ObjectOutputStream oos =
                      new ObjectOutputStream(new FileOutputStream("data.ser"))) {
@@ -64,9 +59,7 @@ public class task2 {
         }
     }
 
-    /**
-     * Завантаження об'єкта
-     */
+    /* Завантаження об'єкта */
     static ShapeData load() {
         try (ObjectInputStream ois =
                      new ObjectInputStream(new FileInputStream("data.ser"))) {
@@ -77,9 +70,7 @@ public class task2 {
         return null;
     }
 
-    /**
-     * Тест правильності
-     */
+    /* Тест */
     static void test() {
         ShapeData data = new ShapeData("101"); // 5
         Calculator calc = new Calculator(data);
@@ -93,9 +84,6 @@ public class task2 {
             System.out.println("Помилка");
     }
 
-    /**
-     * Головний метод
-     */
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
