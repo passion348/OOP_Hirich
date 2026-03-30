@@ -24,4 +24,8 @@
 
 - [Тут п'яте](practice_OOP_Hirich/task5/task5.md)
 
+## Завдання 6
+
+- [Тут шосте](practice_OOP_Hirich/task6/task6.md)
+
 ## to be continued...
