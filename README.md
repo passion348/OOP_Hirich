@@ -28,4 +28,6 @@
 
 - [Тут шосте](practice_OOP_Hirich/task6/task6.md)
 
-## to be continued...
+## Додаткове завдання
+
+- [Тут додаткове](practice_OOP_Hirich/doptask/doptask.md)
