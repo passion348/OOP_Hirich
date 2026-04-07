@@ -1,6 +1,16 @@
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.lang.annotation.*;
+import java.lang.reflect.Method;
+
+/* Анотація */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface Info {
+    String author();
+    String description();
+}
 
 /**
  * Головний клас програми
@@ -12,8 +22,27 @@ public class task6 {
         String display();
     }
 
-    /* Клас даних (Serializable) */
+    /* Observer */
+    interface Observer {
+        void update();
+    }
 
+    /* Observable */
+    static class ObservableResults {
+        private List<Observer> observers = new ArrayList<>();
+
+        public void addObserver(Observer o) {
+            observers.add(o);
+        }
+
+        public void notifyObservers() {
+            for (Observer o : observers) {
+                o.update();
+            }
+        }
+    }
+
+    /* Клас даних (Serializable) */
     static class ShapeData implements Serializable {
         private static final long serialVersionUID = 1L;
 
@@ -62,6 +91,7 @@ public class task6 {
 
         /* Перевизначення методу (overriding) */
         @Override
+        @Info(author = "Student", description = "Обчислення трикутника")
         public void calculate() {
             double a = data.getSide();
             double result = a * a + (Math.sqrt(3) / 4) * a * a;
@@ -176,8 +206,9 @@ public class task6 {
     static class UndoCommand implements Command {
         public void execute() {
             CommandManager.getInstance().undo();
+            task6.observable.notifyObservers();
         }
-
+        
         public void undo() {}
     }
 
@@ -194,6 +225,7 @@ public class task6 {
         public void execute() {
             list.parallelStream().forEach(r ->
                     r.data.setResult(r.data.getResult() * factor));
+            task6.observable.notifyObservers();
         }
 
         public void undo() {
@@ -214,6 +246,7 @@ public class task6 {
         public void execute() {
             backup = new ArrayList<>(list);
             list.sort(Comparator.comparingDouble(r -> r.data.getResult()));
+            task6.observable.notifyObservers();
         }
 
         public void undo() {
@@ -244,6 +277,8 @@ public class task6 {
                 }
                 r.data.setResult(r.data.getResult() / max);
             });
+
+            task6.observable.notifyObservers();
         }
 
         public void undo() {
@@ -264,8 +299,9 @@ public class task6 {
 
         public void execute() {
             list.parallelStream()
-                    .filter(r -> r.data.getResult() == target)
+                    .filter(r -> Math.abs(r.data.getResult() - target) < 0.0001)
                     .forEach(r -> System.out.println("Знайдено: " + r.display()));
+            task6.observable.notifyObservers();
         }
 
         public void undo() {
@@ -284,6 +320,7 @@ public class task6 {
         public void execute() {
             for (Command c : commands)
                 c.execute();
+            task6.observable.notifyObservers();
         }
 
         public void undo() {
@@ -306,6 +343,7 @@ public class task6 {
             double avg = list.parallelStream().mapToDouble(r -> r.data.getResult()).average().orElse(0);
 
             System.out.println("Min=" + min + " Max=" + max + " Avg=" + avg);
+            task6.observable.notifyObservers();
         }
 
         public void undo() {}
@@ -325,6 +363,7 @@ public class task6 {
             list.parallelStream()
                     .filter(r -> r.data.getResult() > threshold)
                     .forEach(r -> System.out.println("Filtered: " + r.display()));
+            task6.observable.notifyObservers();
         }
 
         public void undo() {}
@@ -346,8 +385,22 @@ public class task6 {
         }
     }
 
+    static void showAnnotation() {
+        try {
+            Method m = TriangleSquare.class.getMethod("calculate");
+            if (m.isAnnotationPresent(Info.class)) {
+                Info info = m.getAnnotation(Info.class);
+                System.out.println("Автор: " + info.author());
+                System.out.println("Опис: " + info.description());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     /* Колекція результатів */
     static List<ShapeResult> results = new ArrayList<>();
+
+    static ObservableResults observable = new ObservableResults();
 
     /* Збереження */
     static void save(List<ShapeResult> list) {
@@ -380,91 +433,11 @@ public class task6 {
     }
 
     public static void main(String[] args) {
+    task6.WorkerThread worker = new task6.WorkerThread();
+    worker.start();
 
-        Scanner sc = new Scanner(System.in);
-        WorkerThread worker = new WorkerThread();
-        worker.start();
+    showAnnotation(); // рефлексія
 
-        System.out.print("Введiть двiйкове число: ");
-        String binary = sc.nextLine();
-
-        ShapeData data = new ShapeData(binary);
-
-        System.out.println("1-Звичайний 2-Таблиця");
-        int choice = sc.nextInt();
-
-        ShapeFactory factory;
-
-        if (choice == 1) {
-            factory = new TriangleFactory();
-        } else {
-            System.out.print("Ширина: ");
-            factory = new TableTriangleFactory(sc.nextInt());
-        }
-
-        ShapeResult result = factory.create(data);
-        result.calculate();
-        results.add(result);
-
-        Menu menu = new Menu();
-
-        while (true) {
-            menu.show();
-            int cmd = sc.nextInt();
-
-            switch (cmd) {
-                case 1:
-                    System.out.print("Коеф: ");
-                    worker.addCommand(new ScaleCommand(results, sc.nextDouble()));
-                    break;
-                case 2:
-                    worker.addCommand(new SortCommand(results));
-                    break;
-                case 3:
-                    worker.addCommand(new NormalizeCommand(results));
-                    break;
-                case 4:
-                    System.out.print("Шукати: ");
-                    worker.addCommand(new SearchCommand(results, sc.nextDouble()));
-                    break;
-                case 5:
-                    MacroCommand macro = new MacroCommand();
-                    macro.add(new ScaleCommand(results, 2));
-                    macro.add(new SortCommand(results));
-                    worker.addCommand(macro);
-                    break;
-                case 6:
-                    worker.addCommand(new StatsCommand(results));
-                    break;
-                case 7:
-                    System.out.print("Порiг: ");
-                    worker.addCommand(new FilterCommand(results, sc.nextDouble()));
-                    break;
-                case 8:
-                    worker.addCommand(new UndoCommand());
-                    break;
-                case 9:
-                    System.out.print("Введiть двiйкове число: ");
-                    String bin = sc.next();
-
-                    ShapeData newData = new ShapeData(bin);
-                    ShapeResult newResult = factory.create(newData);
-                    newResult.calculate();
-
-                    results.add(newResult);
-                    break;
-                case 0:
-                    worker.stopWorker();
-                    save(results);
-                    TestShape.run();
-                    return;
-            }
-
-            try { Thread.sleep(200); } catch (Exception ignored) {}
-
-            System.out.println("\nДанi:");
-            for (ShapeResult r : results)
-                System.out.println(r.display());
-        }
-    }
+    new gui(worker, results, observable);
+}
 }
